@@ -1,0 +1,46 @@
+<html>
+<head>
+    <title>Chat</title>
+    <style>
+
+        input { display: block; }
+        ul    { list-style: none; }
+
+    </style>
+</head>
+<body>
+
+<ul id="messages"></ul>
+<form id="chatbox">
+    <textarea id="msg"></textarea>
+    <input type="submit" value="Send" />
+</form>
+<div>
+    <h3>Message Broadcast board</h3>
+    <div id="messageList">
+
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script>
+    var ws = new WebSocket("ws://" + window.location.host + "/room");
+
+    $( "#chatbox" ).submit(function( event ) {
+        var messageToBeSend = $("#msg").val();
+        event.preventDefault();
+        ws.send(JSON.stringify({message: messageToBeSend}))
+    });
+
+    ws.onmessage = function(event) {
+        var m = JSON.parse(event.data);
+        console.log("Received message", m);
+        $( "#messageList" ).append("<p>"+m.message+"</p>")
+    };
+
+    ws.onerror = function(event) {
+        console.log(event)
+    }
+</script>
+</body>
+</html>
