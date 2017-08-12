@@ -16,6 +16,14 @@ type message struct {
 	Message string `json:"message"`
 }
 
+func newClient(socket *websocket.Conn, room *room) *client {
+	return &client{
+		socket: socket,
+		send:   make(chan []byte, messageBufferSize),
+		room:   room,
+	}
+}
+
 func (c *client) read() {
 	defer c.socket.Close()
 

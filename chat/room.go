@@ -50,11 +50,7 @@ func (r *room) run() {
 }
 
 func (r *room) socket(socket *websocket.Conn) {
-	client := &client{
-		socket: socket,
-		send:   make(chan []byte, messageBufferSize),
-		room:   r,
-	}
+	client := newClient(socket, r)
 
 	r.join <- client
 
