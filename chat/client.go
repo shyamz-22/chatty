@@ -30,7 +30,6 @@ func (c *client) read() {
 	for {
 		var m message
 
-		// receive a message using the codec
 		if err := websocket.JSON.Receive(c.socket, &m); err != nil {
 			log.Println(err)
 			break
