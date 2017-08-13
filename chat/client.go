@@ -5,6 +5,12 @@ import (
 	"log"
 )
 
+type IClient interface {
+	read()
+	write()
+}
+
+
 type client struct {
 	socket *websocket.Conn
 	send   chan []byte

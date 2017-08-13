@@ -9,6 +9,11 @@ const (
 	messageBufferSize = 256
 )
 
+type IRoom interface {
+	run()
+	socket(socket *websocket.Conn)
+}
+
 type room struct {
 	forward chan []byte
 	join    chan *client
