@@ -12,7 +12,6 @@ type client struct {
 }
 
 type message struct {
-	// the json tag means this will serialize as a lowercased field
 	Message string `json:"message"`
 }
 
@@ -34,8 +33,6 @@ func (c *client) read() {
 			log.Println(err)
 			break
 		}
-
-		log.Println("Received message:", m.Message)
 
 		c.room.forward <- []byte(m.Message)
 	}
