@@ -10,6 +10,7 @@ import (
 	"text/template"
 
 	"github.com/chatty/trace"
+	"github.com/chatty/config"
 )
 
 // templ represents a single template
@@ -29,13 +30,28 @@ func (t *templateHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	var addr = flag.String("addr", ":8080", "The addr of the application.")
-	flag.Parse() // parse the flags
+	var isCloud = flag.Bool("isCloud", false, "Is cloud deployment")
+
+	flag.Parse()
+
+	var configuration *config.Configuration
+	var isSecureCookie bool
+
+	if !*isCloud {
+		configuration = config.NewJsonConfigLoader("configuration.json").Load()
+		isSecureCookie = false
+	}
+
+	//setup identity provider
+	setUpIdProvider(configuration.Auth, isSecureCookie)
+
 
 	r := newRoom()
 	r.tracer = trace.New(os.Stdout)
 
 	mux := http.NewServeMux()
-	mux.Handle("/", &templateHandler{filename: "chat.html"})
+	mux.HandleFunc("/login", loginHandler)
+	mux.Handle("/", RequiresAuth(&templateHandler{filename: "chat.html"}))
 	mux.Handle("/room", r)
 
 	// get the room going
